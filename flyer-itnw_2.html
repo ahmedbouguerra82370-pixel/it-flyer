@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ITNW — Prestations Graphiques</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Syne', sans-serif;
+  }
+
+  .story {
+    width: 390px;
+    height: 693px;
+    background: #0d0d0d;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Gradient background strips */
+  .bg-strip-1 {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 340px;
+    background: linear-gradient(135deg, #7B2FFF 0%, #FF3CAC 50%, #FF6B35 100%);
+    z-index: 0;
+    clip-path: polygon(0 0, 100% 0, 100% 75%, 0 100%);
+  }
+
+  .bg-strip-2 {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 200px;
+    background: linear-gradient(135deg, #00C6FF 0%, #7B2FFF 100%);
+    z-index: 0;
+    clip-path: polygon(0 30%, 100% 0, 100% 100%, 0 100%);
+    opacity: 0.15;
+  }
+
+  /* Dot grid */
+  .dot-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 22px 22px;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Top header */
+  .header {
+    position: relative;
+    z-index: 3;
+    padding: 44px 32px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .logo-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .logo span {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.6);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .badge {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 10px;
+    color: #fff;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  /* Big headline */
+  .hero {
+    position: relative;
+    z-index: 3;
+    padding: 20px 32px 0;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 44px;
+    font-weight: 800;
+    line-height: 1;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    text-align: center;
+  }
+
+  .hero-title .line2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .hero-title .outlined {
+    -webkit-text-stroke: 2px #fff;
+    color: transparent;
+  }
+
+  .hero-title .line3 {
+    color: #FFD600;
+  }
+
+  /* Cards grid */
+  .cards {
+    position: relative;
+    z-index: 3;
+    padding: 20px 32px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 16px 14px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  /* Shimmer sweep sur chaque carte */
+  .card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .card.c1::after { animation: cardShimmer 4s ease-in-out infinite 1.4s; }
+  .card.c2::after { animation: cardShimmer 4s ease-in-out infinite 1.9s; }
+  .card.c3::after { animation: cardShimmer 4s ease-in-out infinite 2.4s; }
+  .card.c4::after { animation: cardShimmer 4s ease-in-out infinite 2.9s; }
+
+  @keyframes cardShimmer {
+    0%   { left: -100%; }
+    40%, 100% { left: 160%; }
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .card.c1::before { background: linear-gradient(90deg, #FF3CAC, #7B2FFF); }
+  .card.c2::before { background: linear-gradient(90deg, #FFD600, #FF6B35); }
+  .card.c3::before { background: linear-gradient(90deg, #00C6FF, #7B2FFF); }
+  .card.c4::before { background: linear-gradient(90deg, #FF6B35, #FF3CAC); }
+
+  /* Glow coloré au hover */
+  .card.c1:hover { box-shadow: 0 0 20px rgba(255,60,172,0.3); border-color: rgba(255,60,172,0.4); transform: translateY(-4px) scale(1.03); }
+  .card.c2:hover { box-shadow: 0 0 20px rgba(255,214,0,0.3);  border-color: rgba(255,214,0,0.4);  transform: translateY(-4px) scale(1.03); }
+  .card.c3:hover { box-shadow: 0 0 20px rgba(0,198,255,0.3);  border-color: rgba(0,198,255,0.4);  transform: translateY(-4px) scale(1.03); }
+  .card.c4:hover { box-shadow: 0 0 20px rgba(255,107,53,0.3); border-color: rgba(255,107,53,0.4); transform: translateY(-4px) scale(1.03); }
+
+  /* Icône qui pulse doucement */
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1);    opacity: 1; }
+    50%       { transform: scale(1.18); opacity: 0.85; }
+  }
+
+  .card-icon {
+    font-size: 22px;
+    margin-bottom: 8px;
+    display: block;
+    animation: iconPulse 3s ease-in-out infinite;
+  }
+
+  .card.c1 .card-icon { animation-delay: 0s; }
+  .card.c2 .card-icon { animation-delay: 0.6s; }
+  .card.c3 .card-icon { animation-delay: 1.2s; }
+  .card.c4 .card-icon { animation-delay: 1.8s; }
+
+  .card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+  }
+
+  /* Couleur accent sur le titre selon la carte */
+  .card.c1 .card-title { color: #FF3CAC; }
+  .card.c2 .card-title { color: #FFD600; }
+  .card.c3 .card-title { color: #00C6FF; }
+  .card.c4 .card-title { color: #FF6B35; }
+
+  .card-sub {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 4px;
+    font-family: 'Space Mono', monospace;
+    font-style: italic;
+  }
+
+  /* Process strip */
+  .process {
+    position: relative;
+    z-index: 3;
+    margin: 16px 32px 0;
+    background: linear-gradient(135deg, #7B2FFF22, #FF3CAC22);
+    border: 1px solid rgba(255,60,172,0.3);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .process-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+  }
+
+  .process-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .process-step:nth-child(1) .process-dot { background: #FF3CAC22; color: #FF3CAC; border: 1px solid #FF3CAC55; }
+  .process-step:nth-child(3) .process-dot { background: #FFD60022; color: #FFD600; border: 1px solid #FFD60055; }
+  .process-step:nth-child(5) .process-dot { background: #00C6FF22; color: #00C6FF; border: 1px solid #00C6FF55; }
+
+  .process-label {
+    font-size: 9px;
+    text-align: center;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.5px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .process-arrow {
+    color: rgba(255,255,255,0.2);
+    font-size: 12px;
+    flex: 0;
+  }
+
+  /* Bottom CTA */
+  .bottom {
+    position: relative;
+    z-index: 3;
+    padding: 18px 32px 0;
+  }
+
+  .brand-bottom {
+    font-family: 'Syne', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .bottom-right-logo {
+    position: absolute;
+    bottom: 55px;
+    right: 32px;
+    z-index: 3;
+  }
+
+  @keyframes textFlash {
+    0%, 100% { opacity: 1; text-shadow: none; }
+    10%  { opacity: 0.2; }
+    20%  { opacity: 1; text-shadow: 0 0 20px #fff, 0 0 40px #FF3CAC; }
+    25%  { opacity: 0.15; }
+    35%  { opacity: 1; text-shadow: 0 0 10px #fff; }
+    90%  { opacity: 1; text-shadow: none; }
+  }
+
+  .cta {
+    background: linear-gradient(135deg, #FF3CAC, #7B2FFF);
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    border-radius: 100px;
+    white-space: nowrap;
+    box-shadow: 0 4px 24px rgba(255,60,172,0.35);
+  }
+
+  /* Decorative floating shapes */
+  .shape {
+    position: absolute;
+    border-radius: 50%;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .shape-1 {
+    width: 80px; height: 80px;
+    border: 1.5px solid rgba(255,214,0,0.25);
+    top: 260px; right: -20px;
+    animation: spin 20s linear infinite;
+  }
+  .shape-2 {
+    width: 40px; height: 40px;
+    border: 1.5px solid rgba(0,198,255,0.3);
+    top: 300px; left: 20px;
+    animation: spin 15s linear infinite reverse;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ── ANIMATIONS ── */
+
+  /* Fade + slide in from bottom */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Fade in only */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* Slide in from left */
+  @keyframes slideLeft {
+    from { opacity: 0; transform: translateX(-24px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Slide in from right */
+  @keyframes slideRight {
+    from { opacity: 0; transform: translateX(24px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Scale pop */
+  @keyframes pop {
+    0%   { opacity: 0; transform: scale(0.75); }
+    70%  { transform: scale(1.06); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  /* Gradient bg shift */
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Glitch flicker on logo */
+  @keyframes glitch {
+    0%, 92%, 100% { clip-path: none; transform: none; }
+    93%  { clip-path: inset(10% 0 80% 0); transform: translateX(-4px); }
+    94%  { clip-path: inset(60% 0 20% 0); transform: translateX(4px); }
+    95%  { clip-path: none; transform: none; }
+    97%  { clip-path: inset(30% 0 50% 0); transform: translateX(-2px); }
+    98%  { clip-path: none; }
+  }
+
+  /* Shimmer on CTA button */
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* Pulse glow on badge */
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 0px rgba(255,60,172,0); }
+    50%       { box-shadow: 0 0 18px rgba(255,60,172,0.55); }
+  }
+
+  /* Counter number scroll (pseudo) */
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Staggered card entrance */
+  @keyframes cardPop {
+    0%   { opacity: 0; transform: translateY(20px) scale(0.92); }
+    60%  { transform: translateY(-4px) scale(1.02); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Apply animations with delays */
+  .bg-strip-1 {
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+  }
+
+  .header   { animation: fadeUp 0.6s cubic-bezier(.22,1,.36,1) 0.1s both; }
+  .logo     { animation: glitch 8s infinite 2s; }
+  .badge    { animation: glowPulse 3s ease-in-out infinite 1s; }
+
+  .hero         { animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 0.3s both; }
+  .hero-eyebrow { animation: slideLeft 0.5s ease 0.5s both; }
+  .hero-title   { animation: fadeUp 0.8s cubic-bezier(.22,1,.36,1) 0.4s both; }
+
+  .cards         { animation: fadeIn 0.4s ease 0.7s both; }
+  .card.c1       { animation: cardPop 0.6s cubic-bezier(.22,1,.36,1) 0.75s both; }
+  .card.c2       { animation: cardPop 0.6s cubic-bezier(.22,1,.36,1) 0.90s both; }
+  .card.c3       { animation: cardPop 0.6s cubic-bezier(.22,1,.36,1) 1.05s both; }
+  .card.c4       { animation: cardPop 0.6s cubic-bezier(.22,1,.36,1) 1.20s both; }
+
+  .card:hover {
+    transform: translateY(-4px) scale(1.03);
+    border-color: rgba(255,255,255,0.25);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+
+  .process { animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 1.35s both; }
+
+  .bottom       { animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) 1.5s both; }
+
+
+    0%   { transform: scale(1); box-shadow: 0 4px 24px rgba(255,60,172,0.35); }
+    10%  { transform: scale(0.85); }
+    35%  { transform: scale(1.28); box-shadow: 0 0 50px rgba(255,60,172,0.9), 0 0 100px rgba(123,47,255,0.6); }
+    50%  { transform: scale(0.94); }
+    65%  { transform: scale(1.08); }
+    80%  { transform: scale(0.98); }
+    100% { transform: scale(1); box-shadow: 0 4px 24px rgba(255,60,172,0.35); }
+  }
+
+  @keyframes ringExpand {
+    0%   { transform: scale(1); opacity: 0.65; }
+    100% { transform: scale(1.7); opacity: 0; }
+  }
+
+  .cta-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
+  .cta-wrap::before,
+  .cta-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 100px;
+    border: 2px solid rgba(255,60,172,0.55);
+    animation: ringExpand 1.5s ease-out infinite;
+    pointer-events: none;
+  }
+
+  .cta-wrap::after {
+    animation-delay: 0.75s;
+  }
+
+  .cta-center {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    margin: 22px 32px 0;
+  }
+
+  .cta-text {
+    animation: textFlash 3s ease-in-out infinite 2.5s;
+    display: inline-block;
+  }
+  .cta-center .cta { width: auto; text-align: center; padding: 9px 28px; font-size: 10px; }
+    background-size: 300% auto;
+    animation: shimmer 3s linear infinite, boompop 2.2s cubic-bezier(.36,.07,.19,.97) infinite 1.8s;
+    box-shadow: 0 4px 24px rgba(255,60,172,0.35);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Floating shapes enhanced */
+  .shape-1 { animation: spin 20s linear infinite, fadeIn 1s ease 1.6s both; }
+  .shape-2 { animation: spin 15s linear infinite reverse, fadeIn 1s ease 1.8s both; }
+
+  /* Dot grid subtle drift */
+  .dot-grid {
+    animation: fadeIn 1.5s ease 0.2s both;
+  }
+
+</style>
+</head>
+<body>
+<div class="story">
+  <div class="bg-strip-1"></div>
+  <div class="bg-strip-2"></div>
+  <div class="dot-grid"></div>
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+
+  <div class="header">
+    <div class="logo-group">
+      <div class="logo">
+        ITNW
+        <span>Design Studio</span>
+      </div>
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0; margin-top:2px;">
+        <rect x="2" y="2" width="20" height="20" rx="6" stroke="url(#ig)" stroke-width="2.5"/>
+        <circle cx="12" cy="12" r="4.5" stroke="url(#ig2)" stroke-width="2.5"/>
+        <circle cx="17.5" cy="6.5" r="1.4" fill="#FF3CAC"/>
+        <defs>
+          <linearGradient id="ig" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#FFD600"/>
+            <stop offset="50%" stop-color="#FF3CAC"/>
+            <stop offset="100%" stop-color="#7B2FFF"/>
+          </linearGradient>
+          <linearGradient id="ig2" x1="7.5" y1="16.5" x2="16.5" y2="7.5" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#FFD600"/>
+            <stop offset="50%" stop-color="#FF3CAC"/>
+            <stop offset="100%" stop-color="#7B2FFF"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="badge">✦ Dispo</div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-eyebrow">// Prestations créatives</div>
+    <div class="hero-title">
+      <div>Design.</div>
+      <div class="line2"><span class="outlined">Identité.</span></div>
+      <div class="line3">Impact.</div>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card c1">
+      <span class="card-icon">◈</span>
+      <div class="card-title">Logo & Identité</div>
+      <div class="card-sub">branding complet</div>
+    </div>
+    <div class="card c2">
+      <span class="card-icon">◉</span>
+      <div class="card-title">Social Media</div>
+      <div class="card-sub">posts, stories, reels</div>
+    </div>
+    <div class="card c3">
+      <span class="card-icon">▣</span>
+      <div class="card-title">Flyers & Print</div>
+      <div class="card-sub">affiches, supports</div>
+    </div>
+    <div class="card c4">
+      <span class="card-icon">◐</span>
+      <div class="card-title">Charte Graphique</div>
+      <div class="card-sub">univers complet</div>
+    </div>
+  </div>
+
+  <div class="process">
+    <div class="process-step">
+      <div class="process-dot">01</div>
+      <div class="process-label">Brief</div>
+    </div>
+    <div class="process-arrow">›</div>
+    <div class="process-step">
+      <div class="process-dot">02</div>
+      <div class="process-label">Création</div>
+    </div>
+    <div class="process-arrow">›</div>
+    <div class="process-step">
+      <div class="process-dot">03</div>
+      <div class="process-label">Livraison</div>
+    </div>
+  </div>
+
+  <div class="cta-center">
+    <div class="cta-wrap"><div class="cta"><span class="cta-text">DM maintenant →</span></div></div>
+  </div>
+
+  <div class="bottom">
+    <div class="brand-bottom">ITNW</div>
+  </div>
+</div>
+</body>
+</html>
